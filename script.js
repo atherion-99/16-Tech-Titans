@@ -1,480 +1,674 @@
-// ==================== DATA MANAGEMENT ====================
-let subscriptions = JSON.parse(localStorage.getItem("subs")) || getDummyData();
-let expenseChart = null;
-let categoryChart = null;
+// ==================== DATA & STATE MANAGEMENT ====================
 
-// Dummy Data for Demo
-function getDummyData() {
+// User state
+let currentUser = null;
+
+// Subscriptions data
+let subscriptions = JSON.parse(localStorage.getItem("subs")) || getDummySubscriptions();
+
+// Charts
+let usageChart = null;
+
+// ==================== DUMMY DATA ====================
+/**
+ * Initial dummy subscriptions with usage patterns
+ */
+function getDummySubscriptions() {
     return [
         {
             id: 1,
             name: "Netflix",
-            category: "Streaming",
             price: 499,
+            category: "Entertainment",
             billingCycle: "Monthly",
-            date: "2026-04-15",
-            paymentMethod: "Credit Card",
-            icon: "fab fa-netflix"
+            renewalDate: "2026-04-15",
+            usage: "daily",
+            usageClassification: ""
         },
         {
             id: 2,
             name: "Spotify",
-            category: "Music",
             price: 139,
+            category: "Music",
             billingCycle: "Monthly",
-            date: "2026-04-10",
-            paymentMethod: "Debit Card",
-            icon: "fab fa-spotify"
+            renewalDate: "2026-04-10",
+            usage: "daily",
+            usageClassification: ""
         },
         {
             id: 3,
-            name: "Amazon Prime",
-            category: "Streaming",
-            price: 299,
+            name: "Adobe Creative Cloud",
+            price: 599,
+            category: "Productivity",
             billingCycle: "Monthly",
-            date: "2026-04-05",
-            paymentMethod: "Credit Card",
-            icon: "fab fa-amazon"
+            renewalDate: "2026-04-20",
+            usage: "weekly",
+            usageClassification: ""
         },
         {
             id: 4,
-            name: "Microsoft 365",
+            name: "LinkedIn Premium",
+            price: 799,
             category: "Productivity",
-            price: 399,
             billingCycle: "Monthly",
-            date: "2026-04-20",
-            paymentMethod: "Credit Card",
-            icon: "fab fa-microsoft"
+            renewalDate: "2026-04-12",
+            usage: "rarely",
+            usageClassification: ""
         },
         {
             id: 5,
-            name: "Adobe Creative Cloud",
+            name: "Microsoft 365",
+            price: 399,
             category: "Productivity",
-            price: 4999,
             billingCycle: "Monthly",
-            date: "2026-04-12",
-            paymentMethod: "Credit Card",
-            icon: "fab fa-adobe"
+            renewalDate: "2026-04-18",
+            usage: "daily",
+            usageClassification: ""
         },
         {
             id: 6,
-            name: "Google Drive Plus",
-            category: "Cloud",
+            name: "Dropbox Plus",
             price: 199,
+            category: "Cloud Storage",
             billingCycle: "Monthly",
-            date: "2026-04-18",
-            paymentMethod: "Google Account",
-            icon: "fab fa-google"
+            renewalDate: "2026-04-08",
+            usage: "rarely",
+            usageClassification: ""
+        },
+        {
+            id: 7,
+            name: "PlayStation Plus",
+            price: 499,
+            category: "Gaming",
+            billingCycle: "Monthly",
+            renewalDate: "2026-04-25",
+            usage: "monthly",
+            usageClassification: ""
+        },
+        {
+            id: 8,
+            name: "Audible",
+            price: 249,
+            category: "Entertainment",
+            billingCycle: "Monthly",
+            renewalDate: "2026-04-05",
+            usage: "rarely",
+            usageClassification: ""
         }
     ];
 }
 
 // ==================== INITIALIZATION ====================
 document.addEventListener("DOMContentLoaded", function () {
-    loadSubscriptions();
+    classifyAllSubscriptions();
     setupEventListeners();
-    initializeCharts();
-    updateStats();
+    
+    // Check if user is logged in
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        showDashboard();
+    } else {
+        showLogin();
+    }
 });
+
+// ==================== USAGE CLASSIFICATION LOGIC ====================
+/**
+ * Classifies subscription usage based on frequency input
+ * Daily/Weekly → "frequent" (green)
+ * Monthly → "occasional" (yellow)
+ * Rarely → "rare" (red)
+ */
+function classifyUsage(usage) {
+    switch(usage) {
+        case "daily":
+        case "weekly":
+            return "frequent";
+        case "monthly":
+            return "occasional";
+        case "rarely":
+            return "rare";
+        default:
+            return "occasional";
+    }
+}
+
+/**
+ * Classify all subscriptions and add classification property
+ */
+function classifyAllSubscriptions() {
+    subscriptions.forEach(sub => {
+        sub.usageClassification = classifyUsage(sub.usage);
+    });
+}
+
+/**
+ * Get most used subscription
+ */
+function getMostUsedSubscription() {
+    const frequent = subscriptions.filter(s => s.usageClassification === "frequent");
+    if (frequent.length > 0) {
+        return frequent[0];
+    }
+    return null;
+}
+
+/**
+ * Get unused subscriptions (for waste analysis)
+ */
+function getUnusedSubscriptions() {
+    return subscriptions.filter(s => s.usageClassification === "rare");
+}
+
+/**
+ * Calculate wasted money on unused subscriptions
+ */
+function calculateWastedAmount() {
+    return getUnusedSubscriptions().reduce((sum, sub) => sum + sub.price, 0);
+}
+
+/**
+ * Calculate yearly savings potential if unused subscriptions are cancelled
+ */
+function calculatePotentialSavings() {
+    return calculateWastedAmount() * 12;
+}
 
 // ==================== EVENT LISTENERS ====================
 function setupEventListeners() {
-    // Modal Controls
-    const modal = document.getElementById("subscriptionModal");
-    const fabBtn = document.getElementById("fabBtn");
-    const btnNewSub = document.querySelector(".btn-new-sub");
-    const modalCloseBtn = document.querySelector(".modal-close");
-    const modalCloseBtnSecondary = document.querySelector(".modal-close-btn");
-    const subscriptionForm = document.getElementById("subscriptionForm");
-
-    fabBtn.addEventListener("click", () => openModal());
-    btnNewSub.addEventListener("click", () => openModal());
-    modalCloseBtn.addEventListener("click", () => closeModal());
-    modalCloseBtnSecondary.addEventListener("click", () => closeModal());
-    subscriptionForm.addEventListener("submit", handleFormSubmit);
-
-    // Close modal when clicking outside
-    modal.addEventListener("click", (e) => {
-        if (e.target === modal) closeModal();
-    });
-
-    // Search and Filter
-    document.getElementById("searchInput").addEventListener("input", filterSubscriptions);
-    document.getElementById("categoryFilter").addEventListener("change", filterSubscriptions);
-    document.getElementById("sortFilter").addEventListener("change", filterSubscriptions);
-
-    // Sidebar Navigation
+    // Login form
+    document.getElementById("loginForm")?.addEventListener("submit", handleLogin);
+    
+    // Logout button
+    document.getElementById("logoutBtn")?.addEventListener("click", handleLogout);
+    
+    // Navigation
     document.querySelectorAll(".nav-item").forEach(item => {
         item.addEventListener("click", (e) => {
             e.preventDefault();
-            document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("active"));
-            item.classList.add("active");
+            const page = item.dataset.page;
+            switchPage(page);
         });
     });
-
-    // Sidebar Toggle (Mobile)
-    document.querySelector(".sidebar-toggle").addEventListener("click", () => {
-        document.querySelector(".sidebar").classList.toggle("active");
+    
+    // Floating action button
+    document.querySelectorAll(".fab-trigger").forEach(btn => {
+        btn.addEventListener("click", openSubscriptionModal);
     });
-
-    // Chart Period Controls
-    document.querySelectorAll(".btn-icon").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-            document.querySelectorAll(".btn-icon").forEach(b => b.classList.remove("active"));
-            e.target.classList.add("active");
-            updateExpenseChart(e.target.dataset.period);
-        });
+    
+    // Modal close buttons
+    document.querySelectorAll(".modal-close").forEach(btn => {
+        btn.addEventListener("click", closeSubscriptionModal);
     });
+    
+    // Close modal when clicking outside
+    document.getElementById("subscriptionModal")?.addEventListener("click", (e) => {
+        if (e.target.id === "subscriptionModal") closeSubscriptionModal();
+    });
+    
+    // Form submission
+    document.getElementById("subscriptionForm")?.addEventListener("submit", handleAddSubscription);
+    
+    // Filters
+    document.getElementById("usageFilter")?.addEventListener("change", loadSubscriptionsPage);
+    document.getElementById("sortFilter")?.addEventListener("change", loadSubscriptionsPage);
+    document.getElementById("searchInput")?.addEventListener("input", loadSubscriptionsPage);
 }
 
-// ==================== MODAL FUNCTIONS ====================
-function openModal() {
-    document.getElementById("subscriptionModal").classList.add("active");
-    document.body.style.overflow = "hidden";
-}
-
-function closeModal() {
-    document.getElementById("subscriptionModal").classList.remove("active");
-    document.body.style.overflow = "auto";
-    document.getElementById("subscriptionForm").reset();
-}
-
-// ==================== FORM HANDLING ====================
-function handleFormSubmit(e) {
+// ==================== AUTHENTICATION ====================
+/**
+ * Handle login form submission
+ */
+function handleLogin(e) {
     e.preventDefault();
+    
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    
+    // Simple validation (frontend only)
+    if (email && password) {
+        currentUser = {
+            email: email,
+            createdAt: new Date().toLocaleDateString(),
+            id: Date.now()
+        };
+        
+        localStorage.setItem("user", JSON.stringify(currentUser));
+        showDashboard();
+    }
+}
 
-    const newSubscription = {
-        id: Date.now(),
-        name: document.getElementById("subName").value,
-        category: document.getElementById("subCategory").value,
-        price: parseFloat(document.getElementById("subPrice").value),
-        billingCycle: document.getElementById("subBilling").value,
-        date: document.getElementById("subDate").value,
-        paymentMethod: document.getElementById("subPayment").value,
-        icon: document.getElementById("subIcon").value || "fas fa-credit-card"
+/**
+ * Handle logout with confirmation
+ */
+function handleLogout() {
+    if (confirm("Are you sure you want to logout?")) {
+        localStorage.removeItem("user");
+        currentUser = null;
+        showLogin();
+    }
+}
+
+// ==================== PAGE SWITCHING ====================
+/**
+ * Show login page
+ */
+function showLogin() {
+    document.getElementById("loginPage").classList.add("active");
+    document.querySelector(".dashboard-wrapper").classList.remove("active");
+}
+
+/**
+ * Show dashboard page and load user profile
+ */
+function showDashboard() {
+    document.getElementById("loginPage").classList.remove("active");
+    document.querySelector(".dashboard-wrapper").classList.add("active");
+    
+    // Update profile info
+    if (currentUser) {
+        document.getElementById("profileEmail").textContent = currentUser.email;
+        document.getElementById("profileDate").textContent = currentUser.createdAt;
+    }
+    
+    // Load dashboard by default
+    switchPage("dashboard");
+}
+
+/**
+ * Switch between dashboard pages
+ */
+function switchPage(page) {
+    // Hide all pages
+    document.querySelectorAll(".page-content").forEach(p => {
+        p.classList.remove("active");
+    });
+    
+    // Remove active from nav
+    document.querySelectorAll(".nav-item").forEach(item => {
+        item.classList.remove("active");
+    });
+    
+    // Show selected page
+    document.getElementById(page + "Content").classList.add("active");
+    
+    // Update nav
+    document.querySelector(`[data-page="${page}"]`).classList.add("active");
+    
+    // Update page title
+    const titles = {
+        dashboard: "Dashboard",
+        subscriptions: "Subscriptions",
+        insights: "Smart Insights",
+        profile: "Profile"
     };
-
-    subscriptions.push(newSubscription);
-    localStorage.setItem("subs", JSON.stringify(subscriptions));
+    document.getElementById("pageTitle").textContent = titles[page];
     
-    closeModal();
-    loadSubscriptions();
-    updateStats();
-    updateCharts();
+    // Load page specific content
+    if (page === "dashboard") loadDashboardPage();
+    if (page === "subscriptions") loadSubscriptionsPage();
+    if (page === "insights") loadInsightsPage();
+    if (page === "profile") loadProfilePage();
 }
 
-// ==================== SUBSCRIPTION MANAGEMENT ====================
-function loadSubscriptions() {
-    const grid = document.getElementById("subscriptionsGrid");
-    const searchTerm = document.getElementById("searchInput").value.toLowerCase();
-    const category = document.getElementById("categoryFilter").value;
-    const sortBy = document.getElementById("sortFilter").value;
-
-    let filtered = subscriptions.filter(sub => {
-        const matchesSearch = sub.name.toLowerCase().includes(searchTerm);
-        const matchesCategory = !category || sub.category === category;
-        return matchesSearch && matchesCategory;
-    });
-
-    // Sorting
-    switch (sortBy) {
-        case "price":
-            filtered.sort((a, b) => a.price - b.price);
-            break;
-        case "price-desc":
-            filtered.sort((a, b) => b.price - a.price);
-            break;
-        case "date":
-            filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
-            break;
-        default:
-            filtered.sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    grid.innerHTML = "";
-
-    if (filtered.length === 0) {
-        grid.innerHTML = '<p class="empty-state">No subscriptions found. Try adjusting your filters!</p>';
-        return;
-    }
-
-    filtered.forEach(sub => {
-        const card = createSubscriptionCard(sub);
-        grid.appendChild(card);
-    });
+// ==================== DASHBOARD PAGE ====================
+/**
+ * Load and render dashboard with metrics and insights
+ */
+function loadDashboardPage() {
+    classifyAllSubscriptions();
+    updateMetrics();
+    updateUsageChart();
+    updateRecommendations();
 }
 
-function createSubscriptionCard(sub) {
-    const card = document.createElement("div");
-    card.className = "subscription-card";
-
-    const renewalDate = new Date(sub.date);
-    const today = new Date();
-    const daysUntil = Math.ceil((renewalDate - today) / (1000 * 60 * 60 * 24));
-
-    let renewalText = "";
-    let renewalClass = "";
-    if (daysUntil <= 0) {
-        renewalText = "Renews today";
-        renewalClass = "danger";
-    } else if (daysUntil <= 7) {
-        renewalText = `${daysUntil} day${daysUntil > 1 ? "s" : ""} left`;
-        renewalClass = "warning";
-    } else {
-        renewalText = `${daysUntil} days left`;
-        renewalClass = "success";
-    }
-
-    const iconHtml = sub.icon.includes("fa-") 
-        ? `<i class="${sub.icon}"></i>`
-        : `<img src="${sub.icon}" style="width: 100%; height: 100%; object-fit: cover;">`;
-
-    card.innerHTML = `
-        <div class="card-header">
-            <div class="card-icon ${sub.icon.includes("fa-") ? "" : "custom"}">
-                ${iconHtml}
-            </div>
-            <div class="card-actions">
-                <button class="card-btn edit-btn" onclick="editSubscription(${sub.id})" title="Edit">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="card-btn delete" onclick="deleteSubscription(${sub.id})" title="Delete">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        </div>
-        <div class="card-name">${sub.name}</div>
-        <span class="card-category">${sub.category}</span>
-        <div class="card-details">
-            <div class="detail-row">
-                <span class="detail-label">Price:</span>
-                <span class="detail-value">₹${sub.price.toFixed(2)}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Billing:</span>
-                <span class="detail-value">${sub.billingCycle}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Next Renewal:</span>
-                <span class="detail-value">${new Date(sub.date).toLocaleDateString()}</span>
-            </div>
-            ${sub.paymentMethod ? `
-            <div class="detail-row">
-                <span class="detail-label">Payment:</span>
-                <span class="detail-value">${sub.paymentMethod}</span>
-            </div>
-            ` : ""}
-        </div>
-        <div class="card-footer">
-            <div class="price">₹${sub.price}</div>
-            <span class="renewal-status">${renewalText}</span>
-        </div>
-    `;
-
-    return card;
-}
-
-function deleteSubscription(id) {
-    if (confirm("Are you sure you want to delete this subscription?")) {
-        subscriptions = subscriptions.filter(sub => sub.id !== id);
-        localStorage.setItem("subs", JSON.stringify(subscriptions));
-        loadSubscriptions();
-        updateStats();
-        updateCharts();
-    }
-}
-
-function editSubscription(id) {
-    // Future enhancement: Implement edit functionality
-    alert("Edit functionality coming soon!");
-}
-
-function filterSubscriptions() {
-    loadSubscriptions();
-}
-
-// ==================== STATISTICS ====================
-function updateStats() {
-    if (subscriptions.length === 0) {
-        document.getElementById("monthlyCost").textContent = "0";
-        document.getElementById("activeCount").textContent = "0";
-        document.getElementById("annualCost").textContent = "0";
-        document.getElementById("daysUntil").textContent = "-";
-        document.getElementById("nextPaymentName").textContent = "-";
-        document.getElementById("nextPaymentAmount").textContent = "0";
-        return;
-    }
-
-    // Monthly Cost
-    const monthlyCost = subscriptions.reduce((sum, sub) => sum + sub.price, 0);
-    document.getElementById("monthlyCost").textContent = monthlyCost.toFixed(2);
-
-    // Active Count
+/**
+ * Update all metric cards with calculated values
+ */
+function updateMetrics() {
+    // Total spending
+    const total = subscriptions.reduce((sum, sub) => sum + sub.price, 0);
+    document.getElementById("totalSpending").textContent = total.toFixed(2);
     document.getElementById("activeCount").textContent = subscriptions.length;
-
-    // Annual Cost
-    const annualCost = monthlyCost * 12;
-    document.getElementById("annualCost").textContent = annualCost.toFixed(2);
-
-    // Next Payment
-    const nextPayment = subscriptions.reduce((earliest, sub) => {
-        const subDate = new Date(sub.date);
-        const earliestDate = new Date(earliest.date);
-        return subDate < earliestDate ? sub : earliest;
-    });
-
-    const today = new Date();
-    const renewalDate = new Date(nextPayment.date);
-    const daysUntil = Math.ceil((renewalDate - today) / (1000 * 60 * 60 * 24));
-
-    document.getElementById("daysUntil").textContent = Math.max(0, daysUntil);
-    document.getElementById("nextPaymentName").textContent = nextPayment.name;
-    document.getElementById("nextPaymentAmount").textContent = nextPayment.price.toFixed(2);
-}
-
-// ==================== CHARTS ====================
-function initializeCharts() {
-    createExpenseChart();
-    createCategoryChart();
-}
-
-function createExpenseChart() {
-    const ctx = document.getElementById("expenseChart").getContext("2d");
     
-    const monthlyData = getMonthlyExpenseData();
+    // Most used subscription
+    const mostUsed = getMostUsedSubscription();
+    if (mostUsed) {
+        document.getElementById("mostUsedName").textContent = mostUsed.name;
+        document.getElementById("mostUsedFreq").textContent = mostUsed.usage;
+    }
+    
+    // Wasted amount
+    const wasted = calculateWastedAmount();
+    document.getElementById("wastedAmount").textContent = wasted.toFixed(2);
+    document.getElementById("wastedCount").textContent = getUnusedSubscriptions().length;
+    
+    // Potential savings
+    const savings = calculatePotentialSavings();
+    document.getElementById("savingsPotential").textContent = savings.toFixed(2);
+    
+    // Usage counts
+    const frequent = subscriptions.filter(s => s.usageClassification === "frequent").length;
+    const occasional = subscriptions.filter(s => s.usageClassification === "occasional").length;
+    const rare = subscriptions.filter(s => s.usageClassification === "rare").length;
+    
+    document.getElementById("frequentCount").textContent = frequent;
+    document.getElementById("occasionalCount").textContent = occasional;
+    document.getElementById("rareCount").textContent = rare;
+}
 
-    expenseChart = new Chart(ctx, {
-        type: "line",
+/**
+ * Create and render usage distribution chart
+ */
+function updateUsageChart() {
+    const ctx = document.getElementById("usageChart")?.getContext("2d");
+    if (!ctx) return;
+    
+    if (usageChart) usageChart.destroy();
+    
+    const frequent = subscriptions.filter(s => s.usageClassification === "frequent").length;
+    const occasional = subscriptions.filter(s => s.usageClassification === "occasional").length;
+    const rare = subscriptions.filter(s => s.usageClassification === "rare").length;
+    
+    const spendingFrequent = subscriptions
+        .filter(s => s.usageClassification === "frequent")
+        .reduce((sum, s) => sum + s.price, 0);
+    const spendingOccasional = subscriptions
+        .filter(s => s.usageClassification === "occasional")
+        .reduce((sum, s) => sum + s.price, 0);
+    const spendingRare = subscriptions
+        .filter(s => s.usageClassification === "rare")
+        .reduce((sum, s) => sum + s.price, 0);
+    
+    usageChart = new Chart(ctx, {
+        type: "radar",
         data: {
-            labels: monthlyData.labels,
-            datasets: [{
-                label: "Monthly Expenses",
-                data: monthlyData.data,
-                borderColor: "rgba(99, 102, 241, 1)",
-                backgroundColor: "rgba(99, 102, 241, 0.1)",
-                borderWidth: 3,
-                fill: true,
-                tension: 0.4,
-                pointRadius: 5,
-                pointBackgroundColor: "rgba(99, 102, 241, 1)",
-                pointBorderColor: "rgba(15, 23, 42, 1)",
-                pointBorderWidth: 2,
-                pointHoverRadius: 7
-            }]
+            labels: ["Frequently Used", "Occasionally Used", "Rarely Used"],
+            datasets: [
+                {
+                    label: "Count",
+                    data: [frequent, occasional, rare],
+                    borderColor: "rgba(99, 102, 241, 1)",
+                    backgroundColor: "rgba(99, 102, 241, 0.1)",
+                    borderWidth: 2,
+                    pointRadius: 5,
+                    pointBackgroundColor: "rgba(99, 102, 241, 1)"
+                },
+                {
+                    label: "Monthly Spend (₹)",
+                    data: [spendingFrequent, spendingOccasional, spendingRare],
+                    borderColor: "rgba(16, 185, 129, 1)",
+                    backgroundColor: "rgba(16, 185, 129, 0.1)",
+                    borderWidth: 2,
+                    pointRadius: 5,
+                    pointBackgroundColor: "rgba(16, 185, 129, 1)"
+                }
+            ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: true,
             plugins: {
                 legend: {
-                    display: true,
                     labels: {
                         color: "rgba(226, 232, 240, 1)",
-                        font: { size: 12, weight: "600" },
-                        usePointStyle: true,
-                        padding: 15
+                        font: { size: 12, weight: "600" }
                     }
                 }
             },
             scales: {
-                y: {
-                    beginAtZero: true,
+                r: {
                     ticks: { color: "rgba(148, 163, 184, 1)" },
                     grid: { color: "rgba(226, 232, 240, 0.1)" }
-                },
-                x: {
-                    ticks: { color: "rgba(148, 163, 184, 1)" },
-                    grid: { display: false }
                 }
             }
         }
     });
 }
 
-function createCategoryChart() {
-    const ctx = document.getElementById("categoryChart").getContext("2d");
+/**
+ * Update smart recommendations list
+ */
+function updateRecommendations() {
+    const unused = getUnusedSubscriptions();
+    const list = document.getElementById("recommendationsList");
     
-    const categoryData = getCategoryBreakdown();
-
-    categoryChart = new Chart(ctx, {
-        type: "doughnut",
-        data: {
-            labels: categoryData.labels,
-            datasets: [{
-                data: categoryData.data,
-                backgroundColor: [
-                    "rgba(99, 102, 241, 0.8)",
-                    "rgba(167, 139, 250, 0.8)",
-                    "rgba(236, 72, 153, 0.8)",
-                    "rgba(59, 130, 246, 0.8)",
-                    "rgba(34, 197, 94, 0.8)",
-                    "rgba(249, 115, 22, 0.8)"
-                ],
-                borderColor: "rgba(15, 23, 42, 1)",
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: "bottom",
-                    labels: {
-                        color: "rgba(226, 232, 240, 1)",
-                        font: { size: 12, weight: "600" },
-                        padding: 15,
-                        usePointStyle: true
-                    }
-                }
-            }
-        }
-    });
-}
-
-function getMonthlyExpenseData() {
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
-    const data = months.map((month, index) => {
-        // Simulate monthly data with some variation
-        const baseAmount = subscriptions.reduce((sum, sub) => sum + sub.price, 0);
-        return Math.round(baseAmount * (0.85 + Math.random() * 0.3));
-    });
-
-    return { labels: months, data };
-}
-
-function getCategoryBreakdown() {
-    const categories = {};
-    subscriptions.forEach(sub => {
-        categories[sub.category] = (categories[sub.category] || 0) + sub.price;
-    });
-
-    return {
-        labels: Object.keys(categories),
-        data: Object.values(categories)
-    };
-}
-
-function updateExpenseChart(period) {
-    if (!expenseChart) return;
-
-    let labels, data;
-    if (period === "month") {
-        const monthlyData = getMonthlyExpenseData();
-        labels = monthlyData.labels;
-        data = monthlyData.data;
-    } else {
-        labels = ["Q1", "Q2", "Q3", "Q4"];
-        const quarterly = subscriptions.reduce((sum, sub) => sum + sub.price, 0) * 3;
-        data = [quarterly, quarterly * 1.05, quarterly * 0.95, quarterly * 1.1];
+    if (unused.length === 0) {
+        list.innerHTML = '<p style="text-align: center; color: var(--text-tertiary);">Great! You\'re not wasting money on unused subscriptions.</p>';
+        return;
     }
-
-    expenseChart.data.labels = labels;
-    expenseChart.data.datasets[0].data = data;
-    expenseChart.update();
+    
+    list.innerHTML = unused.map(sub => `
+        <div class="recommendation-item">
+            <strong>Cancel ${sub.name}</strong>
+            <span>Save ₹${(sub.price * 12).toFixed(0)}/year</span>
+        </div>
+    `).join("");
 }
 
-function updateCharts() {
-    if (expenseChart) expenseChart.destroy();
-    if (categoryChart) categoryChart.destroy();
-    initializeCharts();
+// ==================== SUBSCRIPTIONS PAGE ====================
+/**
+ * Load and render subscriptions with filtering and sorting
+ */
+function loadSubscriptionsPage() {
+    classifyAllSubscriptions();
+    
+    const usageFilter = document.getElementById("usageFilter")?.value || "";
+    const sortFilter = document.getElementById("sortFilter")?.value || "usage";
+    const searchTerm = document.getElementById("searchInput")?.value.toLowerCase() || "";
+    
+    let filtered = subscriptions.filter(sub => {
+        const matchesUsage = !usageFilter || sub.usageClassification === usageFilter;
+        const matchesSearch = !searchTerm || sub.name.toLowerCase().includes(searchTerm);
+        return matchesUsage && matchesSearch;
+    });
+    
+    // Sort subscriptions
+    if (sortFilter === "price") {
+        filtered.sort((a, b) => a.price - b.price);
+    } else if (sortFilter === "name") {
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+    } else {
+        // Default: by usage classification (frequent → occasional → rare)
+        const usageOrder = { frequent: 0, occasional: 1, rare: 2 };
+        filtered.sort((a, b) => usageOrder[a.usageClassification] - usageOrder[b.usageClassification]);
+    }
+    
+    const grid = document.getElementById("subscriptionsGrid");
+    if (filtered.length === 0) {
+        grid.innerHTML = '<p class="empty-state">No subscriptions found.</p>';
+        return;
+    }
+    
+    grid.innerHTML = filtered.map(sub => createSubscriptionCard(sub)).join("");
+    
+    // Add event listeners to delete buttons
+    document.querySelectorAll(".delete-sub-btn").forEach(btn => {
+        btn.addEventListener("click", () => deleteSubscription(btn.dataset.id));
+    });
+}
+
+/**
+ * Create HTML for a single subscription card
+ */
+function createSubscriptionCard(sub) {
+    const renewal = new Date(sub.renewalDate);
+    const today = new Date();
+    const days = Math.ceil((renewal - today) / (1000 * 60 * 60 * 24));
+    
+    const usageIcons = {
+        frequent: "✅",
+        occasional: "⚠️",
+        rare: "❌"
+    };
+    
+    const renewalText = days > 0 ? `${days} days` : "Renews soon";
+    
+    return `
+        <div class="subscription-card ${sub.usageClassification}">
+            <div class="card-top">
+                <div class="card-name">${sub.name}</div>
+                <div class="card-actions">
+                    <button class="card-btn delete-sub-btn" data-id="${sub.id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <span class="category-badge">${sub.category}</span>
+            <span class="usage-badge ${sub.usageClassification}">
+                ${usageIcons[sub.usageClassification]} ${sub.usageClassification.charAt(0).toUpperCase() + sub.usageClassification.slice(1)}
+            </span>
+            
+            <div class="card-details">
+                <div class="detail-row">
+                    <span class="detail-label">Price:</span>
+                    <span class="detail-value">₹${sub.price}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Cycle:</span>
+                    <span class="detail-value">${sub.billingCycle}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Usage:</span>
+                    <span class="detail-value">${sub.usage}</span>
+                </div>
+            </div>
+            
+            <div class="card-footer">
+                <div class="price">₹${sub.price}</div>
+                <div class="renewal-info">${renewalText}</div>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Delete subscription with confirmation
+ */
+function deleteSubscription(id) {
+    if (confirm("Delete this subscription?")) {
+        subscriptions = subscriptions.filter(s => s.id !== id);
+        localStorage.setItem("subs", JSON.stringify(subscriptions));
+        loadSubscriptionsPage();
+        loadDashboardPage();
+    }
+}
+
+// ==================== INSIGHTS PAGE ====================
+/**
+ * Load insights page with waste analysis and recommendations
+ */
+function loadInsightsPage() {
+    classifyAllSubscriptions();
+    
+    const wasteAnalysis = document.getElementById("wasteAnalysis");
+    const unused = getUnusedSubscriptions();
+    
+    if (unused.length === 0) {
+        wasteAnalysis.innerHTML = '<p>No wasted subscriptions detected. Keep up the good work!</p>';
+    } else {
+        const wastedAmount = calculateWastedAmount();
+        const yearlySavings = wastedAmount * 12;
+        wasteAnalysis.innerHTML = `
+            <p><strong>You\'re wasting ₹${wastedAmount.toFixed(0)}/month</strong></p>
+            <p style="color: var(--text-tertiary); font-size: 13px; margin-top: 8px;">
+                That\'s <strong>₹${yearlySavings.toFixed(0)}/year</strong> on unused subscriptions.
+            </p>
+        `;
+    }
+    
+    // Usage patterns
+    const frequent = subscriptions.filter(s => s.usageClassification === "frequent").length;
+    const occasional = subscriptions.filter(s => s.usageClassification === "occasional").length;
+    const rare = subscriptions.filter(s => s.usageClassification === "rare").length;
+    
+    document.getElementById("usagePatterns").innerHTML = `
+        <div style="display: flex; gap: 20px; margin: 16px 0;">
+            <div>
+                <div style="font-weight: 700; color: var(--success-color);">${frequent}</div>
+                <div style="font-size: 12px; color: var(--text-tertiary);">Frequently Used</div>
+            </div>
+            <div>
+                <div style="font-weight: 700; color: var(--warning-color);">${occasional}</div>
+                <div style="font-size: 12px; color: var(--text-tertiary);">Occasionally Used</div>
+            </div>
+            <div>
+                <div style="font-weight: 700; color: var(--danger-color);">${rare}</div>
+                <div style="font-size: 12px; color: var(--text-tertiary);">Rarely Used</div>
+            </div>
+        </div>
+    `;
+    
+    // Cancellation recommendations
+    const recs = document.getElementById("cancellationRecs");
+    if (unused.length === 0) {
+        recs.innerHTML = '<p>No subscriptions to cancel. You\'re managing them well!</p>';
+    } else {
+        recs.innerHTML = unused.map(sub => `
+            <div style="padding: 12px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; margin: 8px 0;">
+                <div style="font-weight: 700; color: var(--text-primary);">Cancel ${sub.name}</div>
+                <div style="font-size: 13px; color: var(--text-tertiary); margin-top: 4px;">
+                    Rarely used • Costs ₹${(sub.price * 12).toFixed(0)}/year
+                </div>
+            </div>
+        `).join("");
+    }
+}
+
+// ==================== PROFILE PAGE ====================
+/**
+ * Load profile page with user statistics
+ */
+function loadProfilePage() {
+    const total = subscriptions.reduce((sum, sub) => sum + sub.price, 0);
+    
+    document.getElementById("profileSubCount").textContent = subscriptions.length;
+    document.getElementById("profileMonthly").textContent = "₹" + total.toFixed(2);
+}
+
+// ==================== MODAL MANAGEMENT ====================
+/**
+ * Open subscription modal
+ */
+function openSubscriptionModal() {
+    document.getElementById("subscriptionModal").classList.add("active");
+    document.body.style.overflow = "hidden";
+}
+
+/**
+ * Close subscription modal
+ */
+function closeSubscriptionModal() {
+    document.getElementById("subscriptionModal").classList.remove("active");
+    document.body.style.overflow = "auto";
+    document.getElementById("subscriptionForm").reset();
+}
+
+// ==================== ADD SUBSCRIPTION ====================
+/**
+ * Handle form submission to add new subscription
+ */
+function handleAddSubscription(e) {
+    e.preventDefault();
+    
+    const newSub = {
+        id: Date.now(),
+        name: document.getElementById("subName").value,
+        price: parseFloat(document.getElementById("subPrice").value),
+        category: document.getElementById("subCategory").value,
+        billingCycle: document.getElementById("subBilling").value,
+        renewalDate: document.getElementById("subDate").value,
+        usage: document.getElementById("subUsage").value,
+        usageClassification: ""
+    };
+    
+    subscriptions.push(newSub);
+    localStorage.setItem("subs", JSON.stringify(subscriptions));
+    
+    closeSubscriptionModal();
+    classifyAllSubscriptions();
+    loadSubscriptionsPage();
+    loadDashboardPage();
 }
