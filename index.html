@@ -3,29 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subscription Tracker</title>
+    <title>SubFlow - Subscription Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="fas fa-credit-card"></i>
+            <span>SubFlow</span>
+        </div>
+
+        <nav class="nav-menu">
+            <a href="#" class="nav-item active" data-section="dashboard">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item" data-section="subscriptions">
+                <i class="fas fa-list"></i>
+                <span>Subscriptions</span>
+            </a>
+            <a href="#" class="nav-item" data-section="analytics">
+                <i class="fas fa-chart-pie"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="#" class="nav-item" data-section="settings">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <p class="user-name">Alex Thompson</p>
+                    <p class="user-email">alex@example.com</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
         <!-- Header -->
-        <header class="header">
-            <h1>💳 Subscription Tracker</h1>
-            <p>Manage all your subscriptions in one place</p>
+        <header class="top-header">
+            <div class="header-left">
+                <button class="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Dashboard</h1>
+            </div>
+            <div class="header-right">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search subscriptions...">
+                </div>
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">3</span>
+                </button>
+            </div>
         </header>
 
-        <!-- Add Subscription Form -->
-        <div class="form-card">
-            <h2>Add New Subscription</h2>
-            <form onsubmit="addSubscription(event)">
+        <!-- Dashboard Content -->
+        <div class="page-content" id="dashboard">
+            <!-- Stats Cards -->
+            <section class="stats-grid">
+                <!-- Monthly Spending -->
+                <div class="stat-card glass">
+                    <div class="stat-header">
+                        <h3>Monthly Spending</h3>
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="stat-content">
+                        <p class="stat-value">₹<span id="monthlyCost">0</span></p>
+                        <p class="stat-label">Total this month</p>
+                        <div class="stat-change">
+                            <span class="change-value">+12%</span>
+                            <span class="change-label">from last month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Subscriptions -->
+                <div class="stat-card glass">
+                    <div class="stat-header">
+                        <h3>Active Subscriptions</h3>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <p class="stat-value"><span id="activeCount">0</span></p>
+                        <p class="stat-label">Services subscribed</p>
+                        <div class="stat-change">
+                            <span class="change-value">2 New</span>
+                            <span class="change-label">this month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Annual Projection -->
+                <div class="stat-card glass">
+                    <div class="stat-header">
+                        <h3>Annual Projection</h3>
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-content">
+                        <p class="stat-value">₹<span id="annualCost">0</span></p>
+                        <p class="stat-label">Estimated yearly</p>
+                        <div class="stat-change">
+                            <span class="change-value">4 Months</span>
+                            <span class="change-label">of savings possible</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Payment -->
+                <div class="stat-card glass">
+                    <div class="stat-header">
+                        <h3>Next Payment</h3>
+                        <i class="fas fa-calendar"></i>
+                    </div>
+                    <div class="stat-content">
+                        <p class="stat-value">in <span id="daysUntil">0</span> days</p>
+                        <p class="stat-label"><span id="nextPaymentName">-</span></p>
+                        <div class="stat-change">
+                            <span class="change-value">₹<span id="nextPaymentAmount">0</span></span>
+                            <span class="change-label">amount due</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <!-- Expense Chart -->
+                <div class="chart-card glass">
+                    <div class="chart-header">
+                        <h3>Monthly Expenses Trend</h3>
+                        <div class="chart-controls">
+                            <button class="btn-icon active" data-period="month">Month</button>
+                            <button class="btn-icon" data-period="year">Year</button>
+                        </div>
+                    </div>
+                    <canvas id="expenseChart"></canvas>
+                </div>
+
+                <!-- Category Breakdown -->
+                <div class="chart-card glass">
+                    <div class="chart-header">
+                        <h3>Spending by Category</h3>
+                    </div>
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Subscriptions List Section -->
+            <section class="subscriptions-section">
+                <div class="section-header">
+                    <div>
+                        <h2>Your Subscriptions</h2>
+                        <p>Manage and track all your active subscriptions</p>
+                    </div>
+                    <button class="btn-primary btn-new-sub">
+                        <i class="fas fa-plus"></i>
+                        Add Subscription
+                    </button>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="filter-bar glass">
+                    <div class="filter-item">
+                        <label>Category:</label>
+                        <select id="categoryFilter">
+                            <option value="">All Categories</option>
+                            <option value="Streaming">Streaming</option>
+                            <option value="Music">Music</option>
+                            <option value="Productivity">Productivity</option>
+                            <option value="Cloud">Cloud Storage</option>
+                            <option value="Gaming">Gaming</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>Sort by:</label>
+                        <select id="sortFilter">
+                            <option value="name">Name</option>
+                            <option value="price">Price (Low to High)</option>
+                            <option value="price-desc">Price (High to Low)</option>
+                            <option value="date">Renewal Date</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Subscriptions Grid -->
+                <div class="subscriptions-grid" id="subscriptionsGrid">
+                    <p class="empty-state">No subscriptions added yet. Start by adding your first subscription!</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Floating Action Button -->
+    <button class="fab" id="fabBtn">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Modal for Add Subscription -->
+    <div class="modal" id="subscriptionModal">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h2>Add New Subscription</h2>
+                <button class="modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="subscriptionForm" class="modal-form">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="name">Subscription Name</label>
-                        <input type="text" id="name" placeholder="e.g., Netflix" required>
+                        <label for="subName">Subscription Name *</label>
+                        <input type="text" id="subName" placeholder="e.g., Netflix" required>
                     </div>
                     <div class="form-group">
-                        <label for="category">Category</label>
-                        <select id="category" required>
+                        <label for="subCategory">Category *</label>
+                        <select id="subCategory" required>
                             <option value="">Select Category</option>
                             <option value="Streaming">Streaming</option>
                             <option value="Music">Music</option>
@@ -40,12 +247,12 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="price">Monthly Cost (₹)</label>
-                        <input type="number" id="price" placeholder="0.00" step="0.01" required>
+                        <label for="subPrice">Monthly Cost (₹) *</label>
+                        <input type="number" id="subPrice" placeholder="0.00" step="0.01" required>
                     </div>
                     <div class="form-group">
-                        <label for="billingCycle">Billing Cycle</label>
-                        <select id="billingCycle" required>
+                        <label for="subBilling">Billing Cycle *</label>
+                        <select id="subBilling" required>
                             <option value="Monthly">Monthly</option>
                             <option value="Quarterly">Quarterly</option>
                             <option value="Annual">Annual</option>
@@ -55,44 +262,32 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="date">Renewal Date</label>
-                        <input type="date" id="date" required>
+                        <label for="subDate">Next Renewal Date *</label>
+                        <input type="date" id="subDate" required>
                     </div>
                     <div class="form-group">
-                        <label for="paymentMethod">Payment Method</label>
-                        <input type="text" id="paymentMethod" placeholder="e.g., Credit Card">
+                        <label for="subPayment">Payment Method</label>
+                        <input type="text" id="subPayment" placeholder="e.g., Credit Card">
                     </div>
                 </div>
 
-                <button type="submit" class="btn-primary">+ Add Subscription</button>
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="subIcon">Icon URL (optional)</label>
+                        <input type="text" id="subIcon" placeholder="Paste icon URL or use Font Awesome class">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary modal-close-btn">Cancel</button>
+                    <button type="submit" class="btn-primary">Add Subscription</button>
+                </div>
             </form>
-        </div>
-
-        <!-- Stats Section -->
-        <div class="stats-section">
-            <div class="stat-card">
-                <h3>Monthly Spend</h3>
-                <p class="stat-value">₹<span id="total">0</span></p>
-            </div>
-            <div class="stat-card">
-                <h3>Annual Spend</h3>
-                <p class="stat-value">₹<span id="annual">0</span></p>
-            </div>
-            <div class="stat-card">
-                <h3>Active Subscriptions</h3>
-                <p class="stat-value"><span id="count">0</span></p>
-            </div>
-        </div>
-
-        <!-- Subscriptions List -->
-        <div class="subscriptions-section">
-            <h2>Your Subscriptions</h2>
-            <div id="list" class="subscriptions-grid">
-                <p class="empty-state">No subscriptions yet. Add one to get started!</p>
-            </div>
         </div>
     </div>
 
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
