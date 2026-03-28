@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style >
+        input{ 
+            background-image:url(bg.jpg ) ;
+        }
+
+
+    </style>
+  <title>Subscription Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1>Subscription Tracker </h1>
+
+  <div class="form">
+
+    <input type="text" id="name" placeholder="Subscription Name " style="background-color:  rgb(23, 155, 172);";><br>
+    <input type="number" id="price" placeholder="Monthly and Annual Cost" style="background-color: rgb(23, 140, 172);"><br>
+    <input type="number" id="Name" placeholder="Billing Cycle" style="background-color: rgb(18, 120, 104);"><br>
+    <input type="date" id="date" placeholder="Renewal date" style="background-color: rgb(16, 119, 147);"><br>
+    <input type="text" id="category" placeholder="category" style="background-color: rgb(52, 170, 212);"><br>
+    <input type="number" id="price" placeholder="Payment Method" style="background-color: rgb(22, 163, 188);" <br>
+    <button onclick="addSubscription()">Add</button>
+    
+  </div>
+
+  <h2>Total Monthly Cost: ₹<span id="total">0</span></h2>
+
+  <ul id="list"></ul>
+
+  <script src="script.js"></script>
+</body>
