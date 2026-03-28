@@ -31,7 +31,7 @@ function getDummySubscriptions() {
             price: 139,
             category: "Music",
             billingCycle: "Monthly",
-            renewalDate: "2026-04-10",
+            renewalDate: "2026-03-31",
             usage: "daily",
             usageClassification: ""
         },
@@ -51,7 +51,7 @@ function getDummySubscriptions() {
             price: 799,
             category: "Productivity",
             billingCycle: "Monthly",
-            renewalDate: "2026-04-12",
+            renewalDate: "2026-04-02",
             usage: "rarely",
             usageClassification: ""
         },
@@ -71,7 +71,7 @@ function getDummySubscriptions() {
             price: 199,
             category: "Cloud Storage",
             billingCycle: "Monthly",
-            renewalDate: "2026-04-08",
+            renewalDate: "2026-04-01",
             usage: "rarely",
             usageClassification: ""
         },
@@ -173,6 +173,59 @@ function calculateWastedAmount() {
  */
 function calculatePotentialSavings() {
     return calculateWastedAmount() * 12;
+}
+
+/**
+ * Get subscriptions expiring within 3-5 days
+ */
+function getExpiringSubscriptions() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const minDate = new Date(today);
+    minDate.setDate(today.getDate() + 3);
+    
+    const maxDate = new Date(today);
+    maxDate.setDate(today.getDate() + 5);
+    
+    return subscriptions.filter(sub => {
+        const renewalDate = new Date(sub.renewalDate);
+        renewalDate.setHours(0, 0, 0, 0);
+        return renewalDate >= minDate && renewalDate <= maxDate;
+    }).sort((a, b) => new Date(a.renewalDate) - new Date(b.renewalDate));
+}
+
+/**
+ * Render expiring subscriptions
+ */
+function updateExpiringSection() {
+    const expiring = getExpiringSubscriptions();
+    const list = document.getElementById("expiringSoonList");
+    
+    if (expiring.length === 0) {
+        list.innerHTML = '<p class="empty-state">No subscriptions expiring soon</p>';
+        return;
+    }
+    
+    list.innerHTML = expiring.map(sub => {
+        const daysUntil = Math.ceil((new Date(sub.renewalDate) - new Date()) / (1000 * 60 * 60 * 24));
+        const isCritical = daysUntil <= 3;
+        const renewalDate = new Date(sub.renewalDate).toLocaleDateString('en-IN', { 
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric' 
+        });
+        
+        return `
+            <div class="expiring-item ${isCritical ? 'critical' : ''}">
+                <div class="expiring-item-info">
+                    <div class="expiring-item-name">${sub.name}</div>
+                    <div class="expiring-item-date">Renews on ${renewalDate}</div>
+                </div>
+                <span class="expiring-item-badge">${daysUntil} days</span>
+            </div>
+        `;
+    }).join("");
 }
 
 // ==================== EVENT LISTENERS ====================
@@ -319,6 +372,7 @@ function switchPage(page) {
 function loadDashboardPage() {
     classifyAllSubscriptions();
     updateMetrics();
+    updateExpiringSection();
     updateUsageChart();
     updateRecommendations();
 }

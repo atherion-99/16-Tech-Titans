@@ -3,173 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SubFlow - Subscription Manager</title>
+    <title>QUICKSUB - Smart Subscription Manager</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar">
-        <div class="logo">
-            <i class="fas fa-credit-card"></i>
-            <span>SubFlow</span>
-        </div>
-
-        <nav class="nav-menu">
-            <a href="#" class="nav-item active" data-section="dashboard">
-                <i class="fas fa-chart-line"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="#" class="nav-item" data-section="subscriptions">
-                <i class="fas fa-list"></i>
-                <span>Subscriptions</span>
-            </a>
-            <a href="#" class="nav-item" data-section="analytics">
-                <i class="fas fa-chart-pie"></i>
-                <span>Analytics</span>
-            </a>
-            <a href="#" class="nav-item" data-section="settings">
-                <i class="fas fa-cog"></i>
-                <span>Settings</span>
-            </a>
-        </nav>
-
-        <div class="sidebar-footer">
-            <div class="user-profile">
-                <div class="avatar">
-                    <i class="fas fa-user"></i>
-                </div>
-                <div class="user-info">
-                    <p class="user-name">Alex Thompson</p>
-                    <p class="user-email">alex@example.com</p>
-                </div>
-            </div>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Header -->
-        <header class="top-header">
-            <div class="header-left">
-                <button class="sidebar-toggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1>Dashboard</h1>
-            </div>
-            <div class="header-right">
-                <div class="search-bar">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Search subscriptions...">
-                </div>
-                <button class="notification-btn">
-                    <i class="fas fa-bell"></i>
-                    <span class="badge">3</span>
-                </button>
-            </div>
-        </header>
-
-        <!-- Dashboard Content -->
-        <div class="page-content" id="dashboard">
-            <!-- Stats Cards -->
-            <section class="stats-grid">
-                <!-- Monthly Spending -->
-                <div class="stat-card glass">
-                    <div class="stat-header">
-                        <h3>Monthly Spending</h3>
+    <!-- Login Page -->
+    <div id="loginPage" class="auth-page active">
+        <div class="auth-container">
+            <!-- Left Section - Branding -->
+            <div class="auth-left">
+                <div class="auth-branding">
+                    <div class="brand-logo">
                         <i class="fas fa-credit-card"></i>
                     </div>
-                    <div class="stat-content">
-                        <p class="stat-value">₹<span id="monthlyCost">0</span></p>
-                        <p class="stat-label">Total this month</p>
-                        <div class="stat-change">
-                            <span class="change-value">+12%</span>
-                            <span class="change-label">from last month</span>
+                    <h1>QUICKSUB</h1>
+                    <p>Intelligent Subscription Management</p>
+                    <div class="brand-features">
+                        <div class="feature">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Smart Analytics</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-eye-slash"></i>
+                            <span>Detect Waste</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-wallet"></i>
+                            <span>Save Money</span>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Active Subscriptions -->
-                <div class="stat-card glass">
-                    <div class="stat-header">
-                        <h3>Active Subscriptions</h3>
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div class="stat-content">
-                        <p class="stat-value"><span id="activeCount">0</span></p>
-                        <p class="stat-label">Services subscribed</p>
-                        <div class="stat-change">
-                            <span class="change-value">2 New</span>
-                            <span class="change-label">this month</span>
+            <!-- Right Section - Form -->
+            <div class="auth-right">
+                <div class="auth-form-container">
+                    <h2>Welcome Back</h2>
+                    <p>Sign in to your account</p>
+
+                    <form id="loginForm" class="auth-form">
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" placeholder="you@example.com" required>
+                            <i class="fas fa-check-circle valid-icon"></i>
                         </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" placeholder="••••••••" required>
+                            <i class="fas fa-eye toggle-password"></i>
+                        </div>
+
+                        <div class="form-options">
+                            <label class="checkbox">
+                                <input type="checkbox">
+                                <span>Remember me</span>
+                            </label>
+                            <a href="#" class="forgot-password">Forgot password?</a>
+                        </div>
+
+                        <button type="submit" class="btn-primary btn-large">Sign In</button>
+                    </form>
+
+                    <div class="divider">OR</div>
+
+                    <button class="btn-social">
+                        <i class="fab fa-google"></i>
+                        <span>Sign in with Google</span>
+                    </button>
+
+                    <div class="auth-footer">
+                        <p>Don't have an account? <a href="#" class="toggle-auth">Create account</a></p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
 
-                <!-- Annual Projection -->
-                <div class="stat-card glass">
-                    <div class="stat-header">
-                        <h3>Annual Projection</h3>
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="stat-content">
-                        <p class="stat-value">₹<span id="annualCost">0</span></p>
-                        <p class="stat-label">Estimated yearly</p>
-                        <div class="stat-change">
-                            <span class="change-value">4 Months</span>
-                            <span class="change-label">of savings possible</span>
-                        </div>
+    <!-- Dashboard -->
+    <div id="dashboardPage" class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-credit-card"></i>
+                <span>QUICKSUB</span>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-page="subscriptions">
+                    <i class="fas fa-list"></i>
+                    <span>Subscriptions</span>
+                </a>
+                <a href="#" class="nav-item" data-page="insights">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Insights</span>
+                </a>
+                <a href="#" class="nav-item" data-page="profile">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="btn-logout" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <h1 id="pageTitle">Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search subscriptions...">
                     </div>
                 </div>
+            </header>
 
-                <!-- Upcoming Payment -->
-                <div class="stat-card glass">
-                    <div class="stat-header">
-                        <h3>Next Payment</h3>
-                        <i class="fas fa-calendar"></i>
-                    </div>
-                    <div class="stat-content">
-                        <p class="stat-value">in <span id="daysUntil">0</span> days</p>
-                        <p class="stat-label"><span id="nextPaymentName">-</span></p>
-                        <div class="stat-change">
-                            <span class="change-value">₹<span id="nextPaymentAmount">0</span></span>
-                            <span class="change-label">amount due</span>
+            <!-- Dashboard Page -->
+            <div class="page-content active" id="dashboardContent">
+                <!-- Key Metrics -->
+                <section class="metrics-grid">
+                    <!-- Total Spending -->
+                    <div class="metric-card glass">
+                        <div class="metric-header">
+                            <h3>Monthly Spending</h3>
+                            <i class="fas fa-wallet"></i>
                         </div>
+                        <p class="metric-value">₹<span id="totalSpending">0</span></p>
+                        <p class="metric-label">Across <span id="activeCount">0</span> subscriptions</p>
                     </div>
-                </div>
-            </section>
 
-            <!-- Charts Section -->
-            <section class="charts-section">
-                <!-- Expense Chart -->
-                <div class="chart-card glass">
+                    <!-- Most Used -->
+                    <div class="metric-card glass">
+                        <div class="metric-header">
+                            <h3>Most Used</h3>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="metric-value" id="mostUsedName">-</p>
+                        <p class="metric-label">Used <span id="mostUsedFreq">-</span></p>
+                    </div>
+
+                    <!-- Wasting Money -->
+                    <div class="metric-card glass warning">
+                        <div class="metric-header">
+                            <h3>Wasting on</h3>
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <p class="metric-value danger">₹<span id="wastedAmount">0</span></p>
+                        <p class="metric-label"><span id="wastedCount">0</span> unused subscriptions</p>
+                    </div>
+
+                    <!-- Potential Savings -->
+                    <div class="metric-card glass success">
+                        <div class="metric-header">
+                            <h3>Could Save</h3>
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                        <p class="metric-value">₹<span id="savingsPotential">0</span>/year</p>
+                        <p class="metric-label">By canceling unused</p>
+                    </div>
+                </section>
+
+                <!-- Expiring Soon -->
+                <section class="expiring-soon-section glass">
+                    <div class="section-header-inline">
+                        <h2>Expiring Soon</h2>
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div id="expiringSoonList" class="expiring-list">
+                        <p class="empty-state">No subscriptions expiring soon</p>
+                    </div>
+                </section>
+
+                <!-- Usage Distribution Chart -->
+                <section class="chart-section glass">
                     <div class="chart-header">
-                        <h3>Monthly Expenses Trend</h3>
-                        <div class="chart-controls">
-                            <button class="btn-icon active" data-period="month">Month</button>
-                            <button class="btn-icon" data-period="year">Year</button>
+                        <h2>Usage Distribution</h2>
+                        <p>How your subscriptions are being used</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="usageChart"></canvas>
+                    </div>
+                </section>
+
+                <!-- Subscription Status Overview -->
+                <section class="overview-section">
+                    <h2>Subscription Overview</h2>
+                    <div class="overview-grid">
+                        <div class="overview-card glass actively-used">
+                            <div class="overview-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <h3><span id="frequentCount">0</span></h3>
+                            <p>Frequently Used</p>
+                        </div>
+                        <div class="overview-card glass occasionally-used">
+                            <div class="overview-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <h3><span id="occasionalCount">0</span></h3>
+                            <p>Occasionally Used</p>
+                        </div>
+                        <div class="overview-card glass rarely-used">
+                            <div class="overview-icon">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                            <h3><span id="rareCount">0</span></h3>
+                            <p>Rarely/Never Used</p>
                         </div>
                     </div>
-                    <canvas id="expenseChart"></canvas>
-                </div>
+                </section>
 
-                <!-- Category Breakdown -->
-                <div class="chart-card glass">
-                    <div class="chart-header">
-                        <h3>Spending by Category</h3>
+                <!-- Top Recommendations -->
+                <section class="recommendations glass">
+                    <div class="recommendations-header">
+                        <h2>Smart Recommendations</h2>
+                        <i class="fas fa-lightbulb"></i>
                     </div>
-                    <canvas id="categoryChart"></canvas>
-                </div>
-            </section>
+                    <div id="recommendationsList" class="recommendations-list">
+                        <p class="empty-state">Add a subscription to see recommendations</p>
+                    </div>
+                </section>
+            </div>
 
-            <!-- Subscriptions List Section -->
-            <section class="subscriptions-section">
+            <!-- Subscriptions Page -->
+            <div class="page-content" id="subscriptionsContent">
                 <div class="section-header">
                     <div>
                         <h2>Your Subscriptions</h2>
                         <p>Manage and track all your active subscriptions</p>
                     </div>
-                    <button class="btn-primary btn-new-sub">
+                    <button class="btn-primary fab-trigger">
                         <i class="fas fa-plus"></i>
                         Add Subscription
                     </button>
@@ -177,44 +255,108 @@
 
                 <!-- Filter Bar -->
                 <div class="filter-bar glass">
-                    <div class="filter-item">
-                        <label>Category:</label>
-                        <select id="categoryFilter">
-                            <option value="">All Categories</option>
-                            <option value="Streaming">Streaming</option>
-                            <option value="Music">Music</option>
-                            <option value="Productivity">Productivity</option>
-                            <option value="Cloud">Cloud Storage</option>
-                            <option value="Gaming">Gaming</option>
-                            <option value="Shopping">Shopping</option>
-                            <option value="Other">Other</option>
+                    <div class="filter-group">
+                        <label>Filter by Usage:</label>
+                        <select id="usageFilter">
+                            <option value="">All</option>
+                            <option value="frequent">Frequently Used</option>
+                            <option value="occasional">Occasionally Used</option>
+                            <option value="rare">Rarely Used</option>
                         </select>
                     </div>
-                    <div class="filter-item">
+                    <div class="filter-group">
                         <label>Sort by:</label>
                         <select id="sortFilter">
+                            <option value="usage">Usage</option>
+                            <option value="price">Price</option>
                             <option value="name">Name</option>
-                            <option value="price">Price (Low to High)</option>
-                            <option value="price-desc">Price (High to Low)</option>
-                            <option value="date">Renewal Date</option>
                         </select>
                     </div>
                 </div>
 
                 <!-- Subscriptions Grid -->
                 <div class="subscriptions-grid" id="subscriptionsGrid">
-                    <p class="empty-state">No subscriptions added yet. Start by adding your first subscription!</p>
+                    <p class="empty-state">No subscriptions yet. Click the button above to add one!</p>
                 </div>
-            </section>
-        </div>
-    </main>
+            </div>
+
+            <!-- Insights Page -->
+            <div class="page-content" id="insightsContent">
+                <h2>Smart Insights</h2>
+                <div class="insights-grid">
+                    <!-- Waste Analysis -->
+                    <div class="insight-card glass">
+                        <div class="insight-header">
+                            <h3>Subscription Waste Analysis</h3>
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <div id="wasteAnalysis" class="insight-content">
+                            <p>Add subscriptions to analyze waste</p>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Trend -->
+                    <div class="insight-card glass">
+                        <div class="insight-header">
+                            <h3>Usage Patterns</h3>
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div id="usagePatterns" class="insight-content">
+                            <p>Track how your usage changes over time</p>
+                        </div>
+                    </div>
+
+                    <!-- Recommendations -->
+                    <div class="insight-card glass wide">
+                        <div class="insight-header">
+                            <h3>Cancellation Recommendations</h3>
+                            <i class="fas fa-trash"></i>
+                        </div>
+                        <div id="cancellationRecs" class="insight-content">
+                            <p>Recommendations will appear here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Page -->
+            <div class="page-content" id="profileContent">
+                <h2>Profile Settings</h2>
+                <div class="profile-grid">
+                    <div class="profile-card glass">
+                        <h3>Account Information</h3>
+                        <div class="profile-item">
+                            <label>Email</label>
+                            <p id="profileEmail">user@example.com</p>
+                        </div>
+                        <div class="profile-item">
+                            <label>Member Since</label>
+                            <p id="profileDate">Today</p>
+                        </div>
+                    </div>
+
+                    <div class="profile-card glass">
+                        <h3>Statistics</h3>
+                        <div class="profile-item">
+                            <label>Total Subscriptions</label>
+                            <p id="profileSubCount">0</p>
+                        </div>
+                        <div class="profile-item">
+                            <label>Monthly Spend</label>
+                            <p id="profileMonthly">₹0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <!-- Floating Action Button -->
-    <button class="fab" id="fabBtn">
+    <button class="fab fab-trigger" id="fabBtn">
         <i class="fas fa-plus"></i>
     </button>
 
-    <!-- Modal for Add Subscription -->
+    <!-- Add Subscription Modal -->
     <div class="modal" id="subscriptionModal">
         <div class="modal-content glass">
             <div class="modal-header">
@@ -231,24 +373,25 @@
                         <input type="text" id="subName" placeholder="e.g., Netflix" required>
                     </div>
                     <div class="form-group">
-                        <label for="subCategory">Category *</label>
-                        <select id="subCategory" required>
-                            <option value="">Select Category</option>
-                            <option value="Streaming">Streaming</option>
-                            <option value="Music">Music</option>
-                            <option value="Productivity">Productivity</option>
-                            <option value="Cloud">Cloud Storage</option>
-                            <option value="Gaming">Gaming</option>
-                            <option value="Shopping">Shopping</option>
-                            <option value="Other">Other</option>
-                        </select>
+                        <label for="subPrice">Monthly Price (₹) *</label>
+                        <input type="number" id="subPrice" placeholder="0.00" step="0.01" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="subPrice">Monthly Cost (₹) *</label>
-                        <input type="number" id="subPrice" placeholder="0.00" step="0.01" required>
+                        <label for="subCategory">Category *</label>
+                        <select id="subCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Productivity">Productivity</option>
+                            <option value="Cloud Storage">Cloud Storage</option>
+                            <option value="Music">Music</option>
+                            <option value="Gaming">Gaming</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Other">Other</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="subBilling">Billing Cycle *</label>
@@ -262,24 +405,23 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="subDate">Next Renewal Date *</label>
-                        <input type="date" id="subDate" required>
+                        <label for="subUsage">Usage Frequency *</label>
+                        <select id="subUsage" required>
+                            <option value="">Select Usage</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="rarely">Rarely</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label for="subPayment">Payment Method</label>
-                        <input type="text" id="subPayment" placeholder="e.g., Credit Card">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group full-width">
-                        <label for="subIcon">Icon URL (optional)</label>
-                        <input type="text" id="subIcon" placeholder="Paste icon URL or use Font Awesome class">
+                        <label for="subDate">Renewal Date *</label>
+                        <input type="date" id="subDate" required>
                     </div>
                 </div>
 
                 <div class="form-actions">
-                    <button type="button" class="btn-secondary modal-close-btn">Cancel</button>
+                    <button type="button" class="btn-secondary modal-close">Cancel</button>
                     <button type="submit" class="btn-primary">Add Subscription</button>
                 </div>
             </form>

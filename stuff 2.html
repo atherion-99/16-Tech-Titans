@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        h2, h3 {
+            color: #333;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+
+        .form, .section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="month"],
+        input[type="password"],
+        select {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="date"]:focus,
+        input[type="month"]:focus,
+        input[type="password"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        button {
+            padding: 12px 30px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        input[type="radio"] {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .radio-group {
+            margin-bottom: 15px;
+        }
+
+        .radio-group label {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 0;
+        }
+
+        #result {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            display: none;
+        }
+
+        #history {
+            list-style: none;
+            padding: 0;
+        }
+
+        #history li {
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            input[type="text"],
+            input[type="number"],
+            input[type="date"],
+            input[type="month"],
+            input[type="password"],
+            select {
+                max-width: 100%;
+            }
+
+            .form, .section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Subscription Tracker</h1>
+
+    <div class="form">
+        <h2>Add New Subscription</h2>
+
+        <label for="name">Subscription Name:</label>
+        <select id="name" required>
+            <option value="">Select Subscription</option>
+            <option>NETFLIX</option>
+            <option>AMAZON PRIME</option>
+            <option>HOTSTAR</option>
+            <option>ZEE5</option>
+            <option>PRIME VIDEO</option>
+            <option>MX PLAYER</option>
+            <option>SPOTIFY</option>
+            <option>JIO CINEMA</option>
+        </select>
+
+        <label for="plan">Select Plan:</label>
+        <select id="plan" required>
+            <option value="">--Choose Plan--</option>
+            <option value="basic">Basic - ₹99/month</option>
+            <option value="pro">Pro - ₹199/month</option>
+            <option value="premium">Premium - ₹299/month</option>
+        </select>
+
+        <label for="duration">Duration:</label>
+        <select id="duration" required>
+            <option value="">--Choose Duration--</option>
+            <option value="7">1 Week</option>
+            <option value="30">1 Month</option>
+            <option value="90">3 Months</option>
+            <option value="365">1 Year</option>
+        </select>
+
+        <button onclick="calculateExpiry()">Get Expiry Date</button>
+        <p id="result"></p>
+
+        <label for="price">Monthly Cost (₹):</label>
+        <input type="number" id="price" placeholder="Enter monthly cost" required>
+
+        <label for="billingCycle">Billing Cycle:</label>
+        <input type="text" id="billingCycle" placeholder="e.g., Monthly, Yearly" required>
+
+        <label for="date">Renewal Date:</label>
+        <input type="date" id="date" required>
+
+        <label for="category">Category:</label>
+        <input type="text" id="category" placeholder="e.g., Entertainment, Productivity" required>
+
+        <label>Payment Method:</label>
+        <div class="radio-group">
+            <label><input type="radio" name="payment" value="upi"> UPI</label>
+            <label><input type="radio" name="payment" value="card"> Credit/Debit Card</label>
+            <label><input type="radio" name="payment" value="netbanking"> Net Banking</label>
+            <label><input type="radio" name="payment" value="wallet"> Wallet</label>
+        </div>
+
+        <div id="paymentDetails"></div>
+
+        <button onclick="addSubscription()">Add Subscription</button>
+    </div>
+
+    <div class="section">
+        <h2>Monthly Subscription Rating</h2>
+
+        <h3>Netflix</h3>
+        <div class="radio-group">
+            <label><input type="radio" name="netflix-rating" value="Frequently"> Used Frequently</label>
+            <label><input type="radio" name="netflix-rating" value="Occasionally"> Used Occasionally</label>
+            <label><input type="radio" name="netflix-rating" value="Never"> Never Used</label>
+        </div>
+
+        <h3>Amazon Prime</h3>
+        <div class="radio-group">
+            <label><input type="radio" name="prime-rating" value="Frequently"> Used Frequently</label>
+            <label><input type="radio" name="prime-rating" value="Occasionally"> Used Occasionally</label>
+            <label><input type="radio" name="prime-rating" value="Never"> Never Used</label>
+        </div>
+
+        <button onclick="saveRating()">Submit Rating</button>
+
+        <h3>Rating History</h3>
+        <ul id="history"></ul>
+    </div>
+
+    <script>
+        function calculateExpiry() {
+            const duration = document.getElementById("duration").value;
+            if (!duration) {
+                alert("Please select a duration");
+                return;
+            }
+            
+            const today = new Date();
+            const expiry = new Date(today.setDate(today.getDate() + parseInt(duration)));
+            document.getElementById("result").style.display = "block";
+            document.getElementById("result").textContent = "Expiry Date: " + expiry.toLocaleDateString();
+        }
+
+        function addSubscription() {
+            alert("Subscription added successfully!");
+        }
+
+        function saveRating() {
+            const netflixRating = document.querySelector('input[name="netflix-rating"]:checked')?.value;
+            const primeRating = document.querySelector('input[name="prime-rating"]:checked')?.value;
+            
+            if (!netflixRating || !primeRating) {
+                alert("Please rate both subscriptions");
+                return;
+            }
+
+            let history = JSON.parse(localStorage.getItem("ratings")) || [];
+            let date = new Date().toLocaleDateString();
+            
+            history.push(date + " - Netflix: " + netflixRating + ", Prime: " + primeRating);
+            localStorage.setItem("ratings", JSON.stringify(history));
+            
+            showHistory();
+            alert("Rating saved successfully!");
+        }
+
+        function showHistory() {
+            let history = JSON.parse(localStorage.getItem("ratings")) || [];
+            let list = document.getElementById("history");
+            list.innerHTML = "";
+            
+            history.forEach(function(item) {
+                let li = document.createElement("li");
+                li.textContent = item;
+                list.appendChild(li);
+            });
+        }
+
+        // Load history on page load
+        showHistory();
+    </script>
+</body>
+</html>
+showHistory()
+
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+    
+  </div>
+
+  <h2 style="color:black;"
+    style="font-family: 'Times New Roman', Times, serif;"
+    style="font-size:200px">Total Monthly Cost: ₹<span id="total">0</span></h2>
+  <ul id="list"></ul>
+
+  <script src="script.js"></script>
+</body>
