@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style >
+        input{ 
+            background-color: pink ;
+            border:2px solid #4CAF50;
+            padding: 12px;
+        }
+
+        
+
+
+    </style>
+  <title>Subscription Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1 style="color:black;"
+    style="font-family: 'Times New Roman', Times, serif;"
+    style="font-size:200px">Subscription Tracker </h1>
+
+  <div class="form">
+
+    <input type="text" id="name" placeholder="Subscription_name " style="background-color:  rgba(233, 140, 10, 0.153);";>
+    <label for="subscription_name">Choose subscription :</label>
+
+<label for="subscription_name">Choose subscription:</label>
+
+<select id="subscription_name" name="subscription_name">
+  <option value="NETFLIX">Netflix</option>
+  <option value="SPOTIFY">Spotify</option>
+  <option value="AMAZON">Amazon Prime</option>
+</select>
+    <input type="text" id="plan" placeholder="Select your plan" style="background-color: rgba(233, 140, 10, 0.153)">
+    <h3>Select Your Plan</h3>
+
+<input type="radio" id="basic" name="plan" value="basic">
+<label for="basic">Basic - ₹99/month</label><br>
+
+<input type="radio" id="pro" name="plan" value="pro">
+<label for="pro">Pro - ₹199/month</label><br>
+
+<input type="radio" id="premium" name="plan" value="premium">
+<label for="premium">Premium - ₹299/month</label>
+    <input type="number" id="price" placeholder="Monthly and Annual Cost" style="background-color:rgba(233, 140, 10, 0.153);">
+    <input type="number" id="Name" placeholder="Billing Cycle" style="background-color:rgba(233, 140, 10, 0.153);">
+    <input type="date" id="date" placeholder="Renewal date" style="background-color:rgba(233, 140, 10, 0.153)">
+    <input type="text" id="name" placeholder="category" style="background-color: rgba(233, 140, 10, 0.153)">
+    <input type="text" id="name" placeholder="Payment Method" style="background-color: rgba(233, 140, 10, 0.153)">
+    <button onclick="addSubscription()">Add</button>
+
+
+
+<title> Subscription Rating</title>
+
+<style>
+body{
+font-family: Arial;
+text-align:center;
+}
+
+.box{
+border:2px solid black;
+padding:20px;
+width:300px;
+margin:auto;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>Monthly Subscription Rating</h2>
+
+<div class="hexagon>
+
+<h3>Netflix</h3>
+
+<label>
+<input type="radio" name="rating" value="Frequently"> Used Frequently
+</label><br>
+
+<label>
+<input type="radio" name="rating" value="Occasionally"> Used Occasionally
+</label><br>
+
+<label>
+<input type="radio" name="rating" value="Never"> Never Used
+</label><br><br>
+
+<button onclick="saveRating()">Submit Rating</button> 
+
+
+<h3>Amazon Prime</h3>
+<label>
+<input type="radio" name="rating" value="Frequently"> Used Frequently
+</label><br>
+
+<label>
+<input type="radio" name="rating" value="Occasionally"> Used Occasionally
+</label><br>
+
+<label>
+<input type="radio" name="rating" value="Never"> Never Used
+</label><br><br>
+
+</div>
+
+<h3>Rating History</h3>
+<ul id="history"></ul>
+
+<script>
+
+function saveRating(){
+
+let rating = document.querySelector('input[name="rating"]:checked').value
+
+let history = JSON.parse(localStorage.getItem("ratings")) || []
+
+let date = new Date().toLocaleDateString()
+
+history.push(date + " - " + rating)
+
+localStorage.setItem("ratings", JSON.stringify(history))
+
+showHistory()
+
+}
+
+function showHistory(){
+
+let history = JSON.parse(localStorage.getItem("ratings")) || []
+
+let list = document.getElementById("history")
+
+list.innerHTML=""
+
+history.forEach(function(item){
+let li = document.createElement("li")
+li.textContent = item
+list.appendChild(li)
+})
+
+}
+
+showHistory()
+
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+    
+  </div>
+
+  <h2 style="color:black;"
+    style="font-family: 'Times New Roman', Times, serif;"
+    style="font-size:200px">Total Monthly Cost: ₹<span id="total">0</span></h2>
+  <ul id="list"></ul>
+
+  <script src="script.js"></script>
+</body>

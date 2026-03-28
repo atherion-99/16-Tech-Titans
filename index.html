@@ -1,35 +1,157 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <style >
-        input{ 
-            background-image:url(bg.jpg ) ;
-        }
-
-
-    </style>
-  <title>Subscription Tracker</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Tracker</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>💳 Subscription Tracker</h1>
+            <p>Manage all your subscriptions in one place</p>
+        </header>
 
-  <h1>Subscription Tracker </h1>
+        <!-- Add Subscription Form -->
+        <div class="form-card">
+            <h2>Add New Subscription</h2>
+            <form onsubmit="addSubscription(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Subscription Name</label>
+                        <input type="text" id="name" placeholder="e.g., Netflix" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category" required>
+                            <option value="">Select Category</option>
+                            <option value="Streaming">Streaming</option>
+                            <option value="Music">Music</option>
+                            <option value="Productivity">Productivity</option>
+                            <option value="Cloud">Cloud Storage</option>
+                            <option value="Gaming">Gaming</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
 
-  <div class="form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="price">Monthly Cost (₹)</label>
+                        <input type="number" id="price" placeholder="0.00" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="billingCycle">Billing Cycle</label>
+                        <select id="billingCycle" required>
+                            <option value="Monthly">Monthly</option>
+                            <option value="Quarterly">Quarterly</option>
+                            <option value="Annual">Annual</option>
+                        </select>
+                    </div>
+                </div>
 
-    <input type="text" id="name" placeholder="Subscription Name " style="background-color:  rgb(23, 155, 172);";><br>
-    <input type="number" id="price" placeholder="Monthly and Annual Cost" style="background-color: rgb(23, 140, 172);"><br>
-    <input type="number" id="Name" placeholder="Billing Cycle" style="background-color: rgb(18, 120, 104);"><br>
-    <input type="date" id="date" placeholder="Renewal date" style="background-color: rgb(16, 119, 147);"><br>
-    <input type="text" id="category" placeholder="category" style="background-color: rgb(52, 170, 212);"><br>
-    <input type="number" id="price" placeholder="Payment Method" style="background-color: rgb(22, 163, 188);" <br>
-    <button onclick="addSubscription()">Add</button>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="date">Renewal Date</label>
+                        <input type="date" id="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="paymentMethod">Payment Method</label>
+                        <input type="text" id="paymentMethod" placeholder="e.g., Credit Card">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">+ Add Subscription</button>
+            </form>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-section">
+            <div class="stat-card">
+                <h3>Monthly Spend</h3>
+                <p class="stat-value">₹<span id="total">0</span></p>
+            </div>
+            <div class="stat-card">
+                <h3>Annual Spend</h3>
+                <p class="stat-value">₹<span id="annual">0</span></p>
+            </div>
+            <div class="stat-card">
+                <h3>Active Subscriptions</h3>
+                <p class="stat-value"><span id="count">0</span></p>
+            </div>
+        </div>
+
+        <!-- Subscriptions List -->
+        <div class="subscriptions-section">
+            <h2>Your Subscriptions</h2>
+            <div id="list" class="subscriptions-grid">
+                <p class="empty-state">No subscriptions yet. Add one to get started!</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
+let history = JSON.parse(localStorage.getItem("ratings")) || []
+
+let date = new Date().toLocaleDateString()
+
+history.push(date + " - " + rating)
+
+localStorage.setItem("ratings", JSON.stringify(history))
+
+showHistory()
+
+}
+
+function showHistory(){
+
+let history = JSON.parse(localStorage.getItem("ratings")) || []
+
+let list = document.getElementById("history")
+
+list.innerHTML=""
+
+history.forEach(function(item){
+let li = document.createElement("li")
+li.textContent = item
+list.appendChild(li)
+})
+
+}
+
+showHistory()
+
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
     
   </div>
 
-  <h2>Total Monthly Cost: ₹<span id="total">0</span></h2>
-
+  <h2 style="color:black;"
+    style="font-family: 'Times New Roman', Times, serif;"
+    style="font-size:200px">Total Monthly Cost: ₹<span id="total">0</span></h2>
   <ul id="list"></ul>
 
   <script src="script.js"></script>
 </body>
+
+
+
+
+
+
+
+
