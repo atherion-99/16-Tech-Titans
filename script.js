@@ -113,6 +113,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+/**
+ * Clear session and return to login (called by logout button)
+ */
+function clearSession() {
+    localStorage.removeItem("user");
+    localStorage.removeItem("subs");
+    currentUser = null;
+    showLogin();
+}
+
 // ==================== USAGE CLASSIFICATION LOGIC ====================
 /**
  * Classifies subscription usage based on frequency input

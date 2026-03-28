@@ -91,6 +91,8 @@ body {
     display: none;
     min-height: 100vh;
     width: 100%;
+    position: relative;
+    z-index: 1001;
 }
 
 .auth-page.active {
@@ -336,11 +338,13 @@ body {
     min-height: 100vh;
     width: 100%;
     grid-template-columns: 280px 1fr;
-    display: none;
+    position: relative;
+    z-index: 1;
 }
 
 .dashboard-wrapper.active {
     display: grid;
+    z-index: 1;
 }
 
 /* ==================== SIDEBAR ==================== */
@@ -355,7 +359,7 @@ body {
     display: flex;
     flex-direction: column;
     padding: 30px 20px;
-    z-index: 1000;
+    z-index: 999;
     overflow-y: auto;
     box-shadow: var(--shadow-md);
 }
