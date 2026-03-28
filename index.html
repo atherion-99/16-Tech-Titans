@@ -428,44 +428,49 @@
         </div>
     </div>
 
+    <!-- Contact Us Section -->
+    <section class="contact-section" id="contactSection">
+        <div class="contact-container">
+            <div class="contact-header">
+                <h2>Get in Touch</h2>
+                <p>Have questions? We'd love to hear from you!</p>
+            </div>
+
+            <form id="contactForm" class="contact-form glass">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="contactName">Your Name *</label>
+                        <input type="text" id="contactName" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactEmail">Email Address *</label>
+                        <input type="email" id="contactEmail" placeholder="you@example.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="contactMessage">Message *</label>
+                    <textarea id="contactMessage" placeholder="Tell us what's on your mind..." rows="6" required></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary contact-submit">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Send Message</span>
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2026 QUICKSUB | Built by Atharva Pawar & Team</p>
+        </div>
+    </footer>
+
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="script.js"></script>
-</body>
-</html>
-
-let history = JSON.parse(localStorage.getItem("ratings")) || []
-
-let date = new Date().toLocaleDateString()
-
-history.push(date + " - " + rating)
-
-localStorage.setItem("ratings", JSON.stringify(history))
-
-showHistory()
-
-}
-
-function showHistory(){
-
-let history = JSON.parse(localStorage.getItem("ratings")) || []
-
-let list = document.getElementById("history")
-
-list.innerHTML=""
-
-history.forEach(function(item){
-let li = document.createElement("li")
-li.textContent = item
-list.appendChild(li)
-})
-
-}
-
-showHistory()
-
-</script>
-
 </body>
 </html>
 

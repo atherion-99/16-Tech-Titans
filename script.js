@@ -273,6 +273,9 @@ function setupEventListeners() {
     // Form submission
     document.getElementById("subscriptionForm")?.addEventListener("submit", handleAddSubscription);
     
+    // Contact form submission
+    document.getElementById("contactForm")?.addEventListener("submit", handleContactForm);
+    
     // Filters
     document.getElementById("usageFilter")?.addEventListener("change", loadSubscriptionsPage);
     document.getElementById("sortFilter")?.addEventListener("change", loadSubscriptionsPage);
@@ -311,6 +314,34 @@ function handleLogout() {
         currentUser = null;
         showLogin();
     }
+}
+
+/**
+ * Handle contact form submission
+ */
+function handleContactForm(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById("contactName").value;
+    const email = document.getElementById("contactEmail").value;
+    const message = document.getElementById("contactMessage").value;
+    
+    // Store message in localStorage (simple implementation)
+    let messages = JSON.parse(localStorage.getItem("contactMessages")) || [];
+    messages.push({
+        id: Date.now(),
+        name: name,
+        email: email,
+        message: message,
+        date: new Date().toLocaleString()
+    });
+    localStorage.setItem("contactMessages", JSON.stringify(messages));
+    
+    // Reset form and show success message
+    document.getElementById("contactForm").reset();
+    
+    // Show success alert
+    alert("Thank you for your message! We'll get back to you soon.");
 }
 
 // ==================== PAGE SWITCHING ====================

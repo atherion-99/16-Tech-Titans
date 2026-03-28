@@ -2599,3 +2599,212 @@ body {
         right: 20px;
     }
 }
+
+/* ==================== CONTACT US SECTION ==================== */
+.contact-section {
+    padding: 60px 20px;
+    background: var(--bg-primary);
+    margin-bottom: 0;
+}
+
+.contact-container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.contact-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.contact-header h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.contact-header p {
+    font-size: 16px;
+    color: var(--text-tertiary);
+}
+
+.contact-form {
+    padding: 32px;
+    border-radius: 16px;
+    margin-bottom: 40px;
+}
+
+.contact-form .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.contact-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.contact-form .form-group label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.contact-form .form-group input,
+.contact-form .form-group textarea {
+    padding: 12px 14px;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    transition: var(--transition);
+}
+
+.contact-form .form-group input:focus,
+.contact-form .form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    background: rgba(15, 23, 42, 0.8);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+}
+
+.contact-form .form-group input::placeholder,
+.contact-form .form-group textarea::placeholder {
+    color: var(--text-tertiary);
+}
+
+.contact-form .form-group.full-width {
+    grid-column: 1 / -1;
+    margin-bottom: 24px;
+}
+
+.contact-form textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+
+.contact-submit {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+    transition: var(--transition);
+}
+
+.contact-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+}
+
+.contact-submit:active {
+    transform: scale(0.98);
+}
+
+/* ==================== FOOTER ==================== */
+.footer {
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+    border-top: 1px solid var(--glass-border);
+    padding: 30px 20px;
+    text-align: center;
+    margin-top: 0;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-content p {
+    font-size: 14px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* ==================== CONTACT FORM RESPONSIVE DESIGN ==================== */
+@media (max-width: 768px) {
+    .contact-section {
+        padding: 40px 20px;
+    }
+
+    .contact-container {
+        max-width: 100%;
+    }
+
+    .contact-header h2 {
+        font-size: 26px;
+    }
+
+    .contact-header p {
+        font-size: 14px;
+    }
+
+    .contact-form {
+        padding: 24px;
+        margin-bottom: 30px;
+    }
+
+    .contact-form .form-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .footer {
+        padding: 24px 20px;
+    }
+
+    .footer-content p {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .contact-section {
+        padding: 30px 16px;
+    }
+
+    .contact-header h2 {
+        font-size: 22px;
+    }
+
+    .contact-header p {
+        font-size: 13px;
+    }
+
+    .contact-form {
+        padding: 20px;
+    }
+
+    .contact-form .form-group input,
+    .contact-form .form-group textarea {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .contact-form textarea {
+        min-height: 120px;
+    }
+
+    .contact-submit {
+        padding: 12px 20px;
+        font-size: 13px;
+    }
+}
