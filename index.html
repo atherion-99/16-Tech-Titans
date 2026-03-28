@@ -2,11 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QUICKSUB - Smart Subscription Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="QUICKSUB - Intelligent subscription management and tracking platform. Monitor spending, detect waste, and save money on subscriptions.">
+    <meta name="keywords" content="subscription, manager, tracker, budget, analytics">
+    <meta name="author" content="Atharva Pawar & Team">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="QUICKSUB">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Apple iOS Icons & Splash Screen -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%236366f1' width='180' height='180' rx='40'/><text x='90' y='90' font-size='90' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central'>Q</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%236366f1' width='192' height='192'/><text x='96' y='96' font-size='120' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central'>Q</text></svg>">
+    
+    <!-- Styles -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    
+    <title>QUICKSUB - Smart Subscription Manager</title>
 </head>
 <body>
     <!-- Login Page -->
@@ -471,6 +489,119 @@
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="script.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('[PWA] Service Worker registered:', registration);
+                        
+                        // Check for updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New update available
+                                    showUpdatePrompt();
+                                }
+                            });
+                        });
+                        
+                        // Check for updates periodically
+                        setInterval(() => {
+                            registration.update();
+                        }, 60000); // Check every minute
+                    })
+                    .catch(error => console.error('[PWA] Service Worker registration failed:', error));
+            });
+            
+            let refreshing;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (refreshing) return;
+                refreshing = true;
+                console.log('[PWA] Service Worker updated, reloading page...');
+                window.location.reload();
+            });
+        } else {
+            console.log('[PWA] Service Workers not supported in this browser');
+        }
+        
+        // Show update prompt when new version is available
+        function showUpdatePrompt() {
+            const updateBanner = document.createElement('div');
+            updateBanner.style.cssText = `
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: linear-gradient(135deg, #6366f1, #a78bfa);
+                color: white;
+                padding: 16px 20px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                z-index: 10000;
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+                font-family: 'Poppins', sans-serif;
+            `;
+            
+            updateBanner.innerHTML = `
+                <div style="flex: 1;">
+                    <strong>Update available!</strong> A new version of QUICKSUB is ready.
+                </div>
+                <button onclick="location.reload()" style="
+                    background: rgba(255, 255, 255, 0.2);
+                    color: white;
+                    border: 1px solid rgba(255, 255, 255, 0.5);
+                    padding: 8px 16px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    margin-left: 16px;
+                    font-family: 'Poppins', sans-serif;
+                ">
+                    Refresh
+                </button>
+            `;
+            
+            document.body.appendChild(updateBanner);
+        }
+        
+        // Request notification permission for future use
+        if ('Notification' in window && Notification.permission === 'default') {
+            // Notification permission will be requested when needed
+        }
+        
+        // Add install prompt handling for Android
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            console.log('[PWA] Install prompt available');
+            
+            // Show custom install button if needed
+            const installBtn = document.getElementById('installPWABtn');
+            if (installBtn) {
+                installBtn.style.display = 'block';
+                installBtn.addEventListener('click', async () => {
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        console.log(`User response to the install prompt: ${outcome}`);
+                        deferredPrompt = null;
+                    }
+                });
+            }
+        });
+        
+        window.addEventListener('appinstalled', () => {
+            console.log('[PWA] App installed successfully');
+            deferredPrompt = null;
+        });
+    </script>
 </body>
 </html>
 
